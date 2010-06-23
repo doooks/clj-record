@@ -18,6 +18,10 @@
   ;(print "record: " record)
   record)
 
+(defn- whole-record-rule []
+  (fn [record]
+    (not (= (:founded record 1) (:grade record 2)))))
+    
 (clj-record.core/init-model
   (:associations
     (has-many products))
@@ -26,7 +30,8 @@
     (:name "starts with whitespace!" (valid/non-match #"^\s"))
     (:name "ends with whitespace!" (valid/non-match #"\s$"))
     (:founded "must be numeric" #(or (nil? %) (valid/numeric? %)))
-    (:grade my-grade-validation-message #(or (nil? %) (>= % 0))))
+    (:grade my-grade-validation-message #(or (nil? %) (>= % 0)))
+    ("founded and grade should not be the same" (whole-record-rule)))
   (:callbacks
     (:before-save (cb/transform-value :founded infer-full-year))
     (:after-load print-record)))

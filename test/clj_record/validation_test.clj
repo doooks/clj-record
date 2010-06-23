@@ -31,3 +31,9 @@
     (are [messages attribute-name] (= messages (validation/messages-for validation-result attribute-name))
       ["empty!"] :name
       ["must be numeric"] :founded)))
+
+(deftest validate-whole-record-valid
+  (is (validation/valid? (manufacturer/validate {:name "foo" :founded 10 :grade 11}))))
+
+(deftest validate-whole-record-invalid
+  (is (not (validation/valid? (manufacturer/validate {:name "foo" :founded 10 :grade 10})))))

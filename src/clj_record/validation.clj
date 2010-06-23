@@ -10,7 +10,10 @@
 (def messages-for get)
 
 (defn- collect-errors [record errors [attr message validation-fn]]
-  (if (validation-fn (record attr))
+  
+  (if (if (nil? attr)
+	(validation-fn record)
+	(validation-fn (record attr)))
     errors
     (merge-with
       #(apply conj %1 %2)
@@ -35,5 +38,8 @@
 
 (defn expand-init-option
   "init-model macro-expansion delegate that generates a call to add-validation."
-  [model-name attribute-name message function & ignored-options]
-  `(add-validation ~model-name ~attribute-name ~message ~function))
+  ([model-name attribute-name message function]
+     `(add-validation ~model-name ~attribute-name ~message ~function))
+  ([model-name message function]
+     `(add-validation ~model-name nil ~message ~function)))
+
